@@ -1,0 +1,19 @@
+const PRIMARY = "PRIMARY";
+const SECONDARY = "SECONDARY";
+
+const POSITIVE = "POSITIVE";
+const NEGATIVE = "NEGATIVE";
+const NEUTRAL = "NEUTRAL";
+
+const ICON_SHOW = "SHOW";
+const ICON_HIDE = "HIDE";
+
+export {
+  PRIMARY,
+  SECONDARY,
+  POSITIVE,
+  NEGATIVE,
+  NEUTRAL,
+  ICON_SHOW,
+  ICON_HIDE,
+};
