@@ -2,21 +2,25 @@ import { TouchableOpacity } from "react-native";
 import styled, { css } from "styled-components/native";
 
 import { Feather } from "@expo/vector-icons";
-import { ICON_SHOW, SECONDARY } from "../../utils/AppConstants";
+import { ICON_SHOW, PRIMARY, SECONDARY } from "../../utils/AppConstants";
 
 export type ButtonTypeStyleProps = "PRIMARY" | "SECONDARY";
-export type ButtonIconVisibilityProps = "SHOW" | "HIDE";
 
 type Props = {
   type: ButtonTypeStyleProps;
 };
 
 type iconProps = Props & {
-  iconVisibility: ButtonIconVisibilityProps;
+  iconVisible: boolean;
 };
 
-export const Container = styled(TouchableOpacity)<Props>`
+type containerProps = Props & {
+  smallBtn: boolean;
+};
+
+export const Container = styled(TouchableOpacity)<containerProps>`
   flex: 1;
+  width: ${({ smallBtn }) => (smallBtn ? "50%" : "100%")};
 
   min-height: 50px;
   max-height: 50px;
@@ -37,8 +41,7 @@ export const IconContainer = styled.View<iconProps>`
 
   border-color: ${({ theme }) => theme.COLORS.GRAY_100};
   border-radius: 6px;
-  visibility: ${({ iconVisibility }) =>
-    iconVisibility === ICON_SHOW ? "visible" : "collapse"};
+  visibility: ${({ iconVisible }) => (iconVisible ? "visible" : "collapse")};
 `;
 
 export const Icon = styled(Feather).attrs<Props>(({ theme, type }) => ({
@@ -52,5 +55,5 @@ export const Title = styled.Text<Props>`
     font-family: ${theme.FONT_FAMILY.BOLD};
   `}
   color: ${({ theme, type }) =>
-    type === "SECONDARY" ? theme.COLORS.GRAY_100 : theme.COLORS.WHITE}
+    type === SECONDARY ? theme.COLORS.GRAY_100 : theme.COLORS.WHITE}
 `;

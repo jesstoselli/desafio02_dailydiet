@@ -1,7 +1,6 @@
 import { TouchableOpacityProps } from "react-native";
 import React from "react";
 import {
-  ButtonIconVisibilityProps,
   ButtonTypeStyleProps,
   Container,
   Icon,
@@ -12,22 +11,26 @@ import {
 type ButtonProps = TouchableOpacityProps & {
   title: string;
   type?: ButtonTypeStyleProps;
-  iconVisibility?: ButtonIconVisibilityProps;
+  iconVisible?: boolean;
   iconName?: string;
+  smallBtn?: boolean;
 };
 
 export function Button({
   title,
   type = "PRIMARY",
-  iconVisibility = "HIDE",
+  iconVisible = false,
   iconName,
+  smallBtn = false,
   ...rest
 }: ButtonProps) {
   return (
-    <Container type={type} {...rest}>
-      <IconContainer type={type} iconVisibility={iconVisibility}>
-        <Icon name={iconName} />
-      </IconContainer>
+    <Container type={type} {...rest} smallBtn={smallBtn}>
+      {iconVisible && (
+        <IconContainer type={type} iconVisible={iconVisible}>
+          <Icon name={iconName} />
+        </IconContainer>
+      )}
       <Title type={type}>{title}</Title>
     </Container>
   );
