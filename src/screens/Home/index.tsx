@@ -1,54 +1,35 @@
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import {
-  FlatList,
-  SectionList,
-  SectionListData,
-  StatusBar,
-} from "react-native";
-
-import uuid from "react-native-uuid";
+import { useEffect, useId, useState } from "react";
+import { SectionList, StatusBar } from "react-native";
 
 // Components
 import { Button } from "../../components/Button";
-import { MealSectionHeader } from "../../components/MealSectionHeader";
 import { EmptyList } from "../../components/EmptyList";
 import { PercentageInfo } from "../../components/PercentageInfo";
-import { ICON_SHOW, PRIMARY, SECONDARY } from "../../utils/AppConstants";
+import { PRIMARY, SECONDARY } from "../../utils/AppConstants";
 
 import {
   Container,
   HomeHeaderContainer,
   Logo,
+  MealSectionContainer,
+  MealSectionTitle,
   MealsText,
   ProfilePic,
 } from "./styles";
 
 import logo from "../../assets/Logo.png";
 import { MealItem } from "../../components/MealItem";
+import { formatDate } from "../../utils/Formatters";
 
 export interface Meal {
-  id: string | number[];
-  mealName: string;
-  mealTime: string;
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  description: string;
   isWithinDiet: boolean;
 }
-
-interface MealList {
-  id: string | number[];
-  date: string;
-  dailyMeals: Meal[];
-}
-
-export type MealSection = SectionListData<
-  {
-    id: string | number[];
-    mealName: string;
-    mealTime: string;
-    isWithinDiet: boolean;
-  },
-  { sectionDate: string }
->;
 
 export interface MealProps {
   sectionDate: string;
@@ -59,13 +40,20 @@ export function Home() {
   const [data, setData] = useState<MealProps[]>([]);
 
   const navigation = useNavigation();
+  const mealId = useId();
+
+  function defineStats() {}
 
   function handleNewMeal() {
-    navigation.navigate("new-meal");
+    navigation.navigate("new-edit-meal");
   }
 
   function handleMealStats() {
     navigation.navigate("stats");
+  }
+
+  function handleMealItemClick(meal: Meal) {
+    navigation.navigate("meal", { meal });
   }
 
   useEffect(() => {
@@ -74,15 +62,19 @@ export function Home() {
         sectionDate: "16.03.23",
         data: [
           {
-            id: String(uuid.v4()),
-            mealName: "Batata frita",
-            mealTime: "20:00",
+            id: mealId,
+            name: "Batata frita",
+            time: "20:00",
+            date: "16/03/23",
+            description: "Batata frita com bacon",
             isWithinDiet: false,
           },
           {
-            id: uuid.v4(),
-            mealName: "Salada",
-            mealTime: "13:00",
+            id: mealId,
+            name: "Salada",
+            time: "13:00",
+            date: "16/03/23",
+            description: "Salada caesar do Outback",
             isWithinDiet: true,
           },
         ],
@@ -91,15 +83,19 @@ export function Home() {
         sectionDate: "15.03.23",
         data: [
           {
-            id: String(uuid.v4()),
-            mealName: "Yogurte",
-            mealTime: "20:00",
+            id: mealId,
+            name: "Iogurte",
+            time: "20:00",
+            date: "15/03/23",
+            description: "Iogurte grego da Vigor",
             isWithinDiet: true,
           },
           {
-            id: uuid.v4(),
-            mealName: "Feijão tropeiro",
-            mealTime: "12:30",
+            id: mealId,
+            name: "Feijão",
+            time: "12:30",
+            date: "15/03/23",
+            description: "Feijão tropeiro com farofa e couve na manteiga",
             isWithinDiet: false,
           },
         ],
@@ -108,15 +104,19 @@ export function Home() {
         sectionDate: "14.03.23",
         data: [
           {
-            id: String(uuid.v4()),
-            mealName: "Yogurte",
-            mealTime: "20:00",
+            id: mealId,
+            name: "Iogurte",
+            time: "20:00",
+            date: "14/03/23",
+            description: "Iogurte grego da Vigor",
             isWithinDiet: true,
           },
           {
-            id: uuid.v4(),
-            mealName: "Feijão tropeiro",
-            mealTime: "12:30",
+            id: mealId,
+            name: "Feijão",
+            time: "12:30",
+            date: "14/03/23",
+            description: "Feijão tropeiro com farofa e couve na manteiga",
             isWithinDiet: false,
           },
         ],
@@ -146,29 +146,31 @@ export function Home() {
       <MealsText>Refeições:</MealsText>
       <Button
         title={"Nova Refeição"}
-        iconVisibility={ICON_SHOW}
+        iconVisible
         iconName={"plus"}
         onPress={handleNewMeal}
       />
 
-      <SectionList
-        style={{ flex: 1 }}
-        sections={data}
-        keyExtractor={(meal) => String(meal.id)}
-        renderItem={({ item: meal, index, section }) => (
-          <MealItem
-            mealName={meal.mealName}
-            mealTime={meal.mealTime}
-            type={meal.isWithinDiet ? PRIMARY : SECONDARY}
-          />
-        )}
-        renderSectionHeader={({ section }) => (
-          <MealSectionHeader date={section.sectionDate} />
-        )}
-        showsVerticalScrollIndicator={false}
-        fadingEdgeLength={300}
-        ListEmptyComponent={EmptyList}
-      />
+      <MealSectionContainer>
+        <SectionList
+          sections={data}
+          keyExtractor={(meal, index) => meal.id + index}
+          renderItem={({ item: meal }) => (
+            <MealItem
+              mealName={meal.name}
+              mealTime={meal.time}
+              type={meal.isWithinDiet ? PRIMARY : SECONDARY}
+              onPress={() => handleMealItemClick(meal)}
+            />
+          )}
+          renderSectionHeader={({ section }) => (
+            <MealSectionTitle>{section.sectionDate}</MealSectionTitle>
+          )}
+          showsVerticalScrollIndicator={false}
+          fadingEdgeLength={300}
+          ListEmptyComponent={EmptyList}
+        />
+      </MealSectionContainer>
     </Container>
   );
 }

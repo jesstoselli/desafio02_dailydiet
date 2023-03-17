@@ -53,7 +53,7 @@ export const StatsContent = styled.View<StatsContentStyleProps>`
 
 export const StatsHeader = styled.Text`
   ${({ theme }) => css`
-    font-size: ${theme.FONT_SIZE.XL}px;
+    font-size: ${theme.FONT_SIZE.XXL}px;
     font-family: ${theme.FONT_FAMILY.BOLD};
     color: ${theme.COLORS.GRAY_100};
   `};

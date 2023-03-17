@@ -39,3 +39,18 @@ export const MealsText = styled.Text`
   margin-top: 40px;
   margin-bottom: 8px;
 `;
+
+export const MealSectionContainer = styled.View`
+  flex: 1;
+  width: 100%;
+  margin-top: 24px;
+`;
+
+export const MealSectionTitle = styled.Text`
+  ${({ theme }) => css`
+    font-size: ${theme.FONT_SIZE.LG}px;
+    font-family: ${theme.FONT_FAMILY.BOLD};
+    color: ${theme.COLORS.GRAY_100};
+  `};
+  margin-top: 24px;
+`;

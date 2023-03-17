@@ -1,10 +1,5 @@
 import { useMemo } from "react";
-import {
-  Container,
-  SelectButtonStatus,
-  SelectButtonText,
-  SelectTypeStyleProps,
-} from "./styles";
+import { Container, SelectButtonStatus, SelectButtonText } from "./styles";
 import { NEGATIVE, NEUTRAL } from "../../utils/AppConstants";
 
 type SelectButtonProps = {

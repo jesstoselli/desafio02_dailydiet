@@ -31,7 +31,7 @@ export const ArrowIcon = styled(Feather).attrs<PercentageInfoStyleProps>(
 
 export const PercentageText = styled.Text`
   ${({ theme }) => css`
-    font-size: ${theme.FONT_SIZE.XXL}px;
+    font-size: ${theme.FONT_SIZE.XXXL}px;
     font-family: ${theme.FONT_FAMILY.BOLD};
     color: ${theme.COLORS.GRAY_100};
   `};

@@ -19,9 +19,10 @@ export function MealItem({
   mealName,
   mealTime,
   type = PRIMARY,
+  ...rest
 }: MealItemProps) {
   return (
-    <Container>
+    <Container {...rest}>
       <Time>{mealTime}</Time>
       <Divider />
       <Meal>{mealName}</Meal>
