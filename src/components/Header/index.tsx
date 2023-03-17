@@ -1,21 +1,47 @@
+import { useNavigation } from "@react-navigation/native";
 import {
   BackArrowIcon,
   Container,
   HeaderTypeStyleProps,
-  InfoText,
-  PercentageText,
+  Subtitle,
+  Title,
+  SimpleTitle,
+  SimpleContainer,
 } from "./styles";
 
 type HeaderProps = {
   type: HeaderTypeStyleProps;
+  isDietStats?: boolean;
+  title: string;
+  subtitle?: string;
 };
 
-export function Header({ type }: HeaderProps) {
-  return (
-    <Container type={type}>
-      <BackArrowIcon name='arrow-left' />
-      <PercentageText>90,86%</PercentageText>
-      <InfoText>das refeições dentro da dieta</InfoText>
-    </Container>
-  );
+export function Header({
+  type,
+  isDietStats = false,
+  title,
+  subtitle = "",
+}: HeaderProps) {
+  const navigation = useNavigation();
+
+  function handleBackButton() {
+    navigation.navigate("home");
+  }
+
+  if (isDietStats) {
+    return (
+      <Container type={type}>
+        <BackArrowIcon name='arrow-left' onPress={handleBackButton} />
+        <Title>{title}</Title>
+        <Subtitle>{subtitle}</Subtitle>
+      </Container>
+    );
+  } else {
+    return (
+      <SimpleContainer>
+        <BackArrowIcon name='arrow-left' onPress={handleBackButton} />
+        <SimpleTitle>{title}</SimpleTitle>
+      </SimpleContainer>
+    );
+  }
 }

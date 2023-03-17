@@ -27,7 +27,12 @@ export function DietStats() {
         backgroundColor={theme.COLORS.GREEN_LIGHT}
         translucent
       />
-      <Header type={POSITIVE} />
+      <Header
+        type={POSITIVE}
+        isDietStats
+        title={"90,86%"}
+        subtitle={"das refeições dentro da dieta"}
+      />
       <StatsContainer>
         <Title>Estatísticas Gerais</Title>
         <StatsContent type={NEUTRAL}>

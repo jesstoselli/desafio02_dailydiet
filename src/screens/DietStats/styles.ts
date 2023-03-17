@@ -38,16 +38,17 @@ export const Title = styled.Text`
 export const StatsContent = styled.View<StatsContentStyleProps>`
   align-items: center;
   justify-content: center;
-  width: ${({ theme, isSideBySide }) => (isSideBySide ? "50%" : "100%")};
 
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
 
-  background-color: ${({ theme, type }) =>
-    (type === POSITIVE && theme.COLORS.GREEN_LIGHT) ||
+  ${({ theme, type, isSideBySide }) => css`
+    width: ${isSideBySide ? "50%" : "100%"};
+    background-color: ${(type === POSITIVE && theme.COLORS.GREEN_LIGHT) ||
     (type === NEUTRAL && theme.COLORS.GRAY_500) ||
     (type === NEGATIVE && theme.COLORS.RED_LIGHT)};
+  `};
 `;
 
 export const StatsHeader = styled.Text`

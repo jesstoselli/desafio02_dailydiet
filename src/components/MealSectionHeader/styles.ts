@@ -4,7 +4,7 @@ import styled, { css } from "styled-components/native";
 export const Container = styled(SafeAreaView)`
   flex: 1;
   width: 100%;
-  margin-top: 32px;
+  margin-top: 16px;
 `;
 
 export const Title = styled.Text`
