@@ -4,7 +4,9 @@ export declare global {
   namespace ReactNavigation {
     interface RootParamList {
       home: undefined;
-      "new-edit-meal": undefined;
+      "new-edit-meal": {
+        meal: Meal;
+      }?;
       "new-meal-created": {
         type: "POSITIVE" | "NEGATIVE";
       };

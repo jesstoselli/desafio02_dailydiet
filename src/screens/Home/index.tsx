@@ -45,7 +45,7 @@ export function Home() {
   function defineStats() {}
 
   function handleNewMeal() {
-    navigation.navigate("new-edit-meal");
+    navigation.navigate("new-edit-meal", null);
   }
 
   function handleMealStats() {
