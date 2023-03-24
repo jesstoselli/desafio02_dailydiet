@@ -13,6 +13,14 @@ import {
   Title,
 } from "./styles";
 
+export interface DietStats {
+  mealsWithinDietPercentage: string;
+  bestSequence: number;
+  quantityOfMeals: number;
+  mealsWithinDiet: number;
+  mealsOutOfDiet: number;
+}
+
 export function DietStats() {
   const theme = useTheme();
 

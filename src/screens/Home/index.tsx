@@ -20,7 +20,8 @@ import {
 
 import logo from "../../assets/Logo.png";
 import { MealItem } from "../../components/MealItem";
-import { formatDate } from "../../utils/Formatters";
+import { formatDate, formatPercentage } from "../../utils/Formatters";
+import { DietStats } from "../DietStats";
 
 export interface Meal {
   id: string;
@@ -38,11 +39,37 @@ export interface MealProps {
 
 export function Home() {
   const [data, setData] = useState<MealProps[]>([]);
+  // const [dailyStats, setDailyStats] = useState<>()
 
   const navigation = useNavigation();
   const mealId = useId();
 
-  function defineStats() {}
+  function defineStats() {
+    const mealsList = data.map((dataItem) => dataItem.data).flat();
+
+    const quantityOfMeals = mealsList.length;
+
+    const mealsWithinDiet = mealsList.filter(
+      (meal) => meal.isWithinDiet === true
+    ).length;
+
+    const mealsOutOfDiet = mealsList.filter(
+      (meal) => meal.isWithinDiet === false
+    ).length;
+
+    const mealsWithinDietPercentage = formatPercentage(
+      mealsWithinDiet,
+      mealsList.length
+    );
+
+    // return {
+    // mealsWithinDietPercentage,
+    //   bestSequence,
+    //   quantityOfMeals,
+    //   mealsWithinDiet,
+    //   mealsOutOfDiet,
+    // };
+  }
 
   function handleNewMeal() {
     navigation.navigate("new-edit-meal", null);
@@ -153,6 +180,7 @@ export function Home() {
 
       <MealSectionContainer>
         <SectionList
+          style={{ flex: 1 }}
           sections={data}
           keyExtractor={(meal, index) => meal.id + index}
           renderItem={({ item: meal }) => (
