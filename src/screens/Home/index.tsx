@@ -6,7 +6,11 @@ import { SectionList, StatusBar } from "react-native";
 import { Button } from "../../components/Button";
 import { EmptyList } from "../../components/EmptyList";
 import { PercentageInfo } from "../../components/PercentageInfo";
+import { MealItem } from "../../components/MealItem";
+
 import { PRIMARY, SECONDARY } from "../../utils/AppConstants";
+import { formatPercentage } from "../../utils/FormattersHelpers";
+import { DietStats } from "../DietStats";
 
 import {
   Container,
@@ -19,9 +23,6 @@ import {
 } from "./styles";
 
 import logo from "../../assets/Logo.png";
-import { MealItem } from "../../components/MealItem";
-import { formatDate, formatPercentage } from "../../utils/Formatters";
-import { DietStats } from "../DietStats";
 
 export interface Meal {
   id: string;
@@ -43,33 +44,6 @@ export function Home() {
 
   const navigation = useNavigation();
   const mealId = useId();
-
-  function defineStats() {
-    const mealsList = data.map((dataItem) => dataItem.data).flat();
-
-    const quantityOfMeals = mealsList.length;
-
-    const mealsWithinDiet = mealsList.filter(
-      (meal) => meal.isWithinDiet === true
-    ).length;
-
-    const mealsOutOfDiet = mealsList.filter(
-      (meal) => meal.isWithinDiet === false
-    ).length;
-
-    const mealsWithinDietPercentage = formatPercentage(
-      mealsWithinDiet,
-      mealsList.length
-    );
-
-    // return {
-    // mealsWithinDietPercentage,
-    //   bestSequence,
-    //   quantityOfMeals,
-    //   mealsWithinDiet,
-    //   mealsOutOfDiet,
-    // };
-  }
 
   function handleNewMeal() {
     navigation.navigate("new-edit-meal", null);
@@ -201,4 +175,7 @@ export function Home() {
       </MealSectionContainer>
     </Container>
   );
+}
+function filterLongestStreak(mealsList: Meal[]) {
+  throw new Error("Function not implemented.");
 }
