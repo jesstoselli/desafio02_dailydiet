@@ -5,6 +5,7 @@ import { deleteMeal } from "./deleteMeal";
 async function editMeal(meal: Meal) {
   try {
     await deleteMeal(meal.id);
+
     await createMeal(meal);
   } catch (error) {
     throw error;
