@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useId, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { SectionList, StatusBar } from "react-native";
 
 // Components
@@ -23,6 +23,8 @@ import {
 } from "./styles";
 
 import logo from "../../assets/Logo.png";
+import { retrieveDietStats } from "../../storage/stats/retrieveDietStats";
+import { retrieveMeals } from "../../storage/meals/retrieveMeals";
 
 export interface Meal {
   id: string;
@@ -33,14 +35,15 @@ export interface Meal {
   isWithinDiet: boolean;
 }
 
-export interface MealProps {
+export interface MealData {
   sectionDate: string;
   data: Meal[];
 }
 
 export function Home() {
-  const [data, setData] = useState<MealProps[]>([]);
-  // const [dailyStats, setDailyStats] = useState<>()
+  const [mealData, setMealData] = useState<MealData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dietStats, setDietStats] = useState<DietStats>();
 
   const navigation = useNavigation();
   const mealId = useId();
@@ -58,7 +61,7 @@ export function Home() {
   }
 
   useEffect(() => {
-    const meals: MealProps[] = [
+    const meals: MealData[] = [
       {
         sectionDate: "16.03.23",
         data: [
@@ -124,7 +127,39 @@ export function Home() {
       },
     ];
 
-    setData(meals);
+    setMealData(meals);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMealsDataListAndDietStats();
+    }, [])
+  );
+
+  async function fetchMealsDataListAndDietStats() {
+    try {
+      setIsLoading(true);
+      const stats = await retrieveDietStats();
+      const mealDataList = await retrieveMeals();
+
+      setMealData(mealDataList);
+      setDietStats(stats);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const mealsWithinDietPercentage = useMemo(() => {
+    if (dietStats) {
+      return formatPercentage(
+        dietStats?.mealsWithinDiet,
+        dietStats?.quantityOfMeals
+      );
+    } else {
+      return "0%";
+    }
   }, []);
 
   return (
@@ -142,7 +177,10 @@ export function Home() {
           }}
         />
       </HomeHeaderContainer>
-      <PercentageInfo onPress={handleMealStats} />
+      <PercentageInfo
+        percentage={mealsWithinDietPercentage}
+        onPress={handleMealStats}
+      />
 
       <MealsText>Refeições:</MealsText>
       <Button
@@ -155,7 +193,7 @@ export function Home() {
       <MealSectionContainer>
         <SectionList
           style={{ flex: 1 }}
-          sections={data}
+          sections={mealData}
           keyExtractor={(meal, index) => meal.id + index}
           renderItem={({ item: meal }) => (
             <MealItem

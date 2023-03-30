@@ -1,12 +1,10 @@
-import { useId, useMemo } from "react";
+import { useCallback, useId, useMemo, useState } from "react";
 import { View, StatusBar } from "react-native";
 import { useTheme } from "styled-components/native";
 
 import { Header } from "../../components/Header";
 
 import { NEGATIVE, NEUTRAL, POSITIVE } from "../../utils/AppConstants";
-import { formatPercentage } from "../../utils/FormattersHelpers";
-import { filterLongestStreak } from "../../utils/CalculationsHelpers";
 
 import { Meal } from "../Home";
 
@@ -18,6 +16,8 @@ import {
   StatsInfo,
   Title,
 } from "./styles";
+import { retrieveDietStats } from "../../storage/stats/retrieveDietStats";
+import { useFocusEffect } from "@react-navigation/native";
 
 export interface DietStats {
   mealsWithinDietPercentage: string;
@@ -28,6 +28,8 @@ export interface DietStats {
 }
 
 export function DietStats() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [stats, setStats] = useState<DietStats>();
   const theme = useTheme();
 
   const mealId = useId();
@@ -91,46 +93,37 @@ export function DietStats() {
     },
   ];
 
-  function defineStats(mealsList: Meal[]): DietStats {
-    // const mealsList = data.map((dataItem) => dataItem.data).flat();
+  useFocusEffect(
+    useCallback(() => {
+      fetchDietStats();
+    }, [])
+  );
 
-    const bestStreak = filterLongestStreak(mealsList);
-
-    const quantityOfMeals = mealsList.length;
-
-    const mealsWithinDiet = mealsList.filter(
-      (meal) => meal.isWithinDiet === true
-    ).length;
-
-    const mealsOutOfDiet = mealsList.filter(
-      (meal) => meal.isWithinDiet === false
-    ).length;
-
-    const mealsWithinDietPercentage = formatPercentage(
-      mealsWithinDiet,
-      mealsList.length
-    );
-
-    return {
-      mealsWithinDietPercentage,
-      bestStreak,
-      quantityOfMeals,
-      mealsWithinDiet,
-      mealsOutOfDiet,
-    };
+  async function fetchDietStats() {
+    try {
+      setIsLoading(true);
+      const stats = await retrieveDietStats();
+      setStats(stats);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  const stats: DietStats = useMemo(() => defineStats(meals), []);
-
   const headerStatus = useMemo(() => {
+    if (stats === undefined) return NEUTRAL;
+
     const percentage = (stats.mealsWithinDiet / meals.length) * 100;
     return percentage < 60 ? NEGATIVE : POSITIVE;
   }, []);
 
   const statusBarColor = useMemo(() => {
-    return headerStatus === NEGATIVE
-      ? theme.COLORS.RED_LIGHT
-      : theme.COLORS.GREEN_LIGHT;
+    return (
+      (headerStatus === NEGATIVE && theme.COLORS.RED_LIGHT) ||
+      (headerStatus === NEGATIVE && theme.COLORS.GREEN_LIGHT) ||
+      theme.COLORS.GRAY_200
+    );
   }, []);
 
   return (
@@ -143,17 +136,17 @@ export function DietStats() {
       <Header
         type={headerStatus}
         isDietStats
-        title={stats.mealsWithinDietPercentage}
+        title={stats ? stats.mealsWithinDietPercentage : "0%"}
         subtitle={"das refeições dentro da dieta"}
       />
       <StatsContainer>
         <Title>Estatísticas Gerais</Title>
         <StatsContent type={NEUTRAL}>
-          <StatsHeader>{stats.bestStreak}</StatsHeader>
+          <StatsHeader>{stats ? stats.bestStreak : 0}</StatsHeader>
           <StatsInfo>melhor sequência de pratos dentro da dieta</StatsInfo>
         </StatsContent>
         <StatsContent type={NEUTRAL}>
-          <StatsHeader>{stats.quantityOfMeals}</StatsHeader>
+          <StatsHeader>{stats ? stats.quantityOfMeals : 0}</StatsHeader>
           <StatsInfo>refeições registradas</StatsInfo>
         </StatsContent>
         <View style={{ width: "100%", flexDirection: "row" }}>
@@ -162,11 +155,11 @@ export function DietStats() {
             type={POSITIVE}
             style={{ marginRight: 12 }}
           >
-            <StatsHeader>{stats.mealsWithinDiet}</StatsHeader>
+            <StatsHeader>{stats ? stats.mealsWithinDiet : 0}</StatsHeader>
             <StatsInfo>refeições dentro da dieta</StatsInfo>
           </StatsContent>
           <StatsContent isSideBySide type={NEGATIVE}>
-            <StatsHeader>{stats.mealsOutOfDiet}</StatsHeader>
+            <StatsHeader>{stats ? stats.mealsOutOfDiet : 0}</StatsHeader>
             <StatsInfo>refeições dentro da dieta</StatsInfo>
           </StatsContent>
         </View>
