@@ -2,7 +2,7 @@ import { Meal } from "../../screens/Home";
 import { createMeal } from "./createMeal";
 import { deleteMeal } from "./deleteMeal";
 
-async function editMeal(meal: Meal) {
+export async function editMeal(meal: Meal) {
   try {
     await deleteMeal(meal.id);
 

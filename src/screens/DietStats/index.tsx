@@ -16,8 +16,8 @@ import {
   StatsInfo,
   Title,
 } from "./styles";
-import { retrieveDietStats } from "../../storage/stats/retrieveDietStats";
 import { useFocusEffect } from "@react-navigation/native";
+import { retrieveDietStats } from "../../storage/stats/retrieveDietStats";
 
 export interface DietStats {
   mealsWithinDietPercentage: string;
