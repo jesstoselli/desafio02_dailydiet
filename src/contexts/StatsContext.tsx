@@ -1,13 +1,10 @@
 import { ReactNode, createContext, useState } from "react";
-import { MealData } from "../screens/Home";
 import { DietStats } from "../screens/DietStats";
 import { retrieveDietStats } from "../storage/stats/retrieveDietStats";
-import { saveDietStats } from "../storage/stats/saveDietStats";
 
 export type StatsContextDataProps = {
   stats: DietStats;
   getStats: () => void;
-  saveStats: (mealsDataList: MealData[]) => void;
 };
 
 type StatsContextProviderProps = {
@@ -18,7 +15,7 @@ export const StatsContext = createContext<StatsContextDataProps>(
   {} as StatsContextDataProps
 );
 
-export function MealContextProvider({ children }: StatsContextProviderProps) {
+export function StatsContextProvider({ children }: StatsContextProviderProps) {
   const [stats, setStats] = useState<DietStats>({} as DietStats);
 
   async function getStats() {
@@ -31,16 +28,8 @@ export function MealContextProvider({ children }: StatsContextProviderProps) {
     }
   }
 
-  async function saveStats(mealsDataList: MealData[]) {
-    try {
-      await saveDietStats(mealsDataList);
-    } catch (error) {
-      throw error;
-    }
-  }
-
   return (
-    <StatsContext.Provider value={{ stats, getStats, saveStats }}>
+    <StatsContext.Provider value={{ stats, getStats }}>
       {children}
     </StatsContext.Provider>
   );

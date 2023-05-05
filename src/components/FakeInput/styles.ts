@@ -1,16 +1,7 @@
 import styled, { css } from "styled-components/native";
-import { TextInput } from "react-native";
 
-type InputContainerProps = {
-  isSideBySide: boolean;
-};
-
-type InputProps = {
-  multiline: boolean;
-};
-
-export const Container = styled.View<InputContainerProps>`
-  flex: ${({ isSideBySide }) => (isSideBySide === true ? 1 : "none")};
+export const Container = styled.View`
+  flex: 1;
   width: 100%;
   margin-bottom: 24px;
   align-items: flex-start;
@@ -25,12 +16,12 @@ export const Label = styled.Text`
   margin-bottom: 4px;
 `;
 
-export const CustomInput = styled(TextInput)<InputProps>`
+export const FakeInputButton = styled.Button`
   width: 100%;
 
-  ${({ theme, multiline }) => css`
-    min-height: ${multiline === true ? "120px" : "48px"};
-    max-height: ${multiline === true ? "120px" : "48px"};
+  ${({ theme }) => css`
+    min-height: 48px;
+    max-height: 48px;
     border-width: 1px;
     border-color: ${theme.COLORS.GRAY_500};
     color: ${theme.COLORS.GRAY_100};

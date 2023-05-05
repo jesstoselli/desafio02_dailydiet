@@ -1,4 +1,4 @@
-import { useCallback, useId, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { View, StatusBar } from "react-native";
 import { useTheme } from "styled-components/native";
 
@@ -6,7 +6,7 @@ import { Header } from "../../components/Header";
 
 import { NEGATIVE, NEUTRAL, POSITIVE } from "../../utils/AppConstants";
 
-import { Meal } from "../Home";
+import { useStats } from "../../hooks/useStats";
 
 import {
   Container,
@@ -16,8 +16,6 @@ import {
   StatsInfo,
   Title,
 } from "./styles";
-import { useFocusEffect } from "@react-navigation/native";
-import { retrieveDietStats } from "../../storage/stats/retrieveDietStats";
 
 export interface DietStats {
   mealsWithinDietPercentage: string;
@@ -28,94 +26,13 @@ export interface DietStats {
 }
 
 export function DietStats() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [stats, setStats] = useState<DietStats>();
   const theme = useTheme();
-
-  const mealId = useId();
-
-  const meals: Meal[] = [
-    {
-      id: mealId,
-      name: "Batata frita",
-      time: "20:00",
-      date: "16/03/23",
-      description: "Batata frita com bacon",
-      isWithinDiet: false,
-    },
-    {
-      id: mealId,
-      name: "Salada",
-      time: "13:00",
-      date: "16/03/23",
-      description: "Salada caesar do Outback",
-      isWithinDiet: true,
-    },
-    {
-      id: mealId,
-      name: "Iogurte",
-      time: "20:00",
-      date: "15/03/23",
-      description: "Iogurte grego da Vigor",
-      isWithinDiet: true,
-    },
-    {
-      id: mealId,
-      name: "Feijão",
-      time: "12:30",
-      date: "15/03/23",
-      description: "Feijão tropeiro com farofa e couve na manteiga",
-      isWithinDiet: false,
-    },
-    {
-      id: mealId,
-      name: "Iogurte",
-      time: "20:00",
-      date: "14/03/23",
-      description: "Iogurte grego da Vigor",
-      isWithinDiet: true,
-    },
-    {
-      id: mealId,
-      name: "Feijão",
-      time: "12:30",
-      date: "14/03/23",
-      description: "Feijão tropeiro com farofa e couve na manteiga",
-      isWithinDiet: false,
-    },
-    {
-      id: mealId,
-      name: "Bolo de cenoura",
-      time: "13:30",
-      date: "14/03/23",
-      description: "Bolo de cenoura",
-      isWithinDiet: false,
-    },
-  ];
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchDietStats();
-    }, [])
-  );
-
-  async function fetchDietStats() {
-    try {
-      setIsLoading(true);
-      const stats = await retrieveDietStats();
-      setStats(stats);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const { stats } = useStats();
 
   const headerStatus = useMemo(() => {
     if (stats === undefined) return NEUTRAL;
 
-    const percentage = (stats.mealsWithinDiet / meals.length) * 100;
-    return percentage < 60 ? NEGATIVE : POSITIVE;
+    return stats.mealsWithinDiet < 60 ? NEGATIVE : POSITIVE;
   }, []);
 
   const statusBarColor = useMemo(() => {
@@ -167,3 +84,85 @@ export function DietStats() {
     </Container>
   );
 }
+
+// const [isLoading, setIsLoading] = useState(false);
+// const [retrievedStats, setRetrievedStats] = useState<DietStats>();
+
+// const mealId = useId();
+
+// const meals: Meal[] = [
+//   {
+//     id: mealId,
+//     name: "Batata frita",
+//     time: "20:00",
+//     date: "16/03/23",
+//     description: "Batata frita com bacon",
+//     isWithinDiet: false,
+//   },
+//   {
+//     id: mealId,
+//     name: "Salada",
+//     time: "13:00",
+//     date: "16/03/23",
+//     description: "Salada caesar do Outback",
+//     isWithinDiet: true,
+//   },
+//   {
+//     id: mealId,
+//     name: "Iogurte",
+//     time: "20:00",
+//     date: "15/03/23",
+//     description: "Iogurte grego da Vigor",
+//     isWithinDiet: true,
+//   },
+//   {
+//     id: mealId,
+//     name: "Feijão",
+//     time: "12:30",
+//     date: "15/03/23",
+//     description: "Feijão tropeiro com farofa e couve na manteiga",
+//     isWithinDiet: false,
+//   },
+//   {
+//     id: mealId,
+//     name: "Iogurte",
+//     time: "20:00",
+//     date: "14/03/23",
+//     description: "Iogurte grego da Vigor",
+//     isWithinDiet: true,
+//   },
+//   {
+//     id: mealId,
+//     name: "Feijão",
+//     time: "12:30",
+//     date: "14/03/23",
+//     description: "Feijão tropeiro com farofa e couve na manteiga",
+//     isWithinDiet: false,
+//   },
+//   {
+//     id: mealId,
+//     name: "Bolo de cenoura",
+//     time: "13:30",
+//     date: "14/03/23",
+//     description: "Bolo de cenoura",
+//     isWithinDiet: false,
+//   },
+// ];
+
+// useFocusEffect(
+//   useCallback(() => {
+//     fetchDietStats();
+//   }, [])
+// );
+
+// async function fetchDietStats() {
+//   try {
+//     setIsLoading(true);
+//     const stats = await getStats();
+//     setRetrievedStats(stats);
+//   } catch (error) {
+//     console.log(error);
+//   } finally {
+//     setIsLoading(false);
+//   }
+// }

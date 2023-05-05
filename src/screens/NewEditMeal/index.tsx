@@ -1,7 +1,10 @@
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { Controller, useForm } from "react-hook-form";
-import { StatusBar, View } from "react-native";
+import { NativeEventEmitter, Platform, StatusBar, View } from "react-native";
 import { useTheme } from "styled-components/native";
 import { Button } from "../../components/Button";
 
@@ -17,6 +20,8 @@ import {
   FormContainer,
   Label,
 } from "./styles";
+import moment, { min } from "moment";
+import { FakeInput } from "../../components/FakeInput";
 
 type FormDataProps = {
   name: string;
@@ -27,8 +32,40 @@ type FormDataProps = {
 
 export function NewEditMeal() {
   const [selectButton, setSelectButton] = useState<"P" | "N" | null>(null);
+  const [chosenDate, setChosenDate] = useState<string>();
+  const [minimumDate, setMinimumDate] = useState<Date>();
+  const [maximumDate, setMaximumDate] = useState<Date>();
+
   const theme = useTheme();
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      const currentDate = new Date();
+      console.log(currentDate?.toLocaleDateString("pt-Br"));
+      if (currentDate != undefined) {
+        setChosenDate(typeof currentDate.toLocaleDateString("pt-Br"));
+      }
+
+      const minYear = new Date().setUTCFullYear(
+        currentDate.getUTCFullYear() - 1
+      );
+      const minDate = new Date(minYear);
+      setMinimumDate(minDate);
+
+      const maxDay = new Date().setUTCDate(currentDate.getUTCDate() + 1);
+      const maxDate = new Date(maxDay);
+
+      setMaximumDate(maxDate);
+    }, [])
+  );
+
+  function manageTimeStamp(
+    event: DateTimePickerEvent,
+    date?: Date | undefined
+  ) {
+    console.log(date?.toLocaleDateString("pt-Br"));
+  }
 
   const {
     control,
@@ -36,8 +73,10 @@ export function NewEditMeal() {
     formState: { errors },
   } = useForm<FormDataProps>();
 
-  function handleAddNewMeal() {
-    navigation.navigate("new-meal-created", { type: POSITIVE });
+  function handleAddNewMeal({ name, description, date, time }: FormDataProps) {
+    console.log(name, description, date, time);
+
+    // navigation.navigate("new-meal-created", { type: POSITIVE });
   }
 
   return (
@@ -71,18 +110,30 @@ export function NewEditMeal() {
         />
 
         <View style={{ flexDirection: "row", gap: 20 }}>
-          <Controller
+          {/* <Controller
             control={control}
             name='date'
             render={({ field: { onChange, value } }) => (
               <Input
                 label={"Data"}
+                keyboardType='numeric'
                 isSideBySide
                 onChangeText={onChange}
                 value={value}
               />
             )}
+          /> */}
+
+          <FakeInput label='Data' date={chosenDate} />
+
+          <DateTimePicker
+            mode='date'
+            value={new Date()}
+            onChange={manageTimeStamp}
+            minimumDate={minimumDate}
+            maximumDate={maximumDate}
           />
+
           <Controller
             control={control}
             name='time'
@@ -90,6 +141,7 @@ export function NewEditMeal() {
               <Input
                 label={"Hora"}
                 isSideBySide
+                keyboardType='numeric'
                 onChangeText={onChange}
                 value={value}
               />
@@ -114,7 +166,10 @@ export function NewEditMeal() {
         </View>
       </FormContainer>
       <BottomButtonContainer>
-        <Button title={"Cadastrar refeição"} onPress={handleAddNewMeal} />
+        <Button
+          title={"Cadastrar refeição"}
+          onPress={handleSubmit(handleAddNewMeal)}
+        />
       </BottomButtonContainer>
     </Container>
   );
